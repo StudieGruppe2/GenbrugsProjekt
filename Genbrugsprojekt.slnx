@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="Genbrugsprojekt.Api/Genbrugsprojekt.Api.csproj" />
-  <Project Path="Genbrugsprojekt.Client/Genbrugsprojekt.Client.csproj" />
-  <Project Path="Genbrugsprojekt.Core/Genbrugsprojekt.Core.csproj" />
+  <Project Path="Backend/Backend.csproj" />
+  <Project Path="Core/Core.csproj" />
+  <Project Path="Frontend/Frontend.csproj" />
 </Solution>
