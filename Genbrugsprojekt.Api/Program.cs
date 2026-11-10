@@ -1,8 +1,17 @@
+using Backend.Repositories;
+using Genbrugsprojekt.Core;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddSingleton<IPurchaseRepository, PurchaseRepositoryMemory>();
+builder.Services.AddSingleton<IAnnonceRepository, AnnonceRepositoryMemory>();
+builder.Services.AddSingleton<IMemberRepository, MemberRepositoryMemory>();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
