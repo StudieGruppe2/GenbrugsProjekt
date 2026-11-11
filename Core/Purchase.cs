@@ -7,10 +7,10 @@ public class Purchase
     public string Annonce_Id { get; set; } = "";
 
     // Id'et på det medlem, der vil købe
-    public string Buyer_Id { get; set; } = "";
+     public int Buyer_Id { get; set;} = Random.Shared.Next();
 
     // Id'et på det medlem, der sælger (ejer annoncen)
-    public string Seller_Id { get; set; } = "";
+    public int Seller_Id { get; set; } = Random.Shared.Next();
 
     // Købets tilstand: "Afventer", "Accepteret" eller "Afvist"
     public string Status { get; set; } = "Afventer";

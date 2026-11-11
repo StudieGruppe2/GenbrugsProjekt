@@ -1,5 +1,6 @@
 using Backend.Repositories;
 using Core;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
@@ -23,7 +24,7 @@ public class PurchaseController : ControllerBase
 
     //Henter alle køb, som et medlem har lavet som køber.
     [HttpGet("buyer/{buyerId}")]
-    public ActionResult<List<Purchase>> GetByBuyerId(string buyerId)
+    public ActionResult<List<Purchase>> GetByBuyerId(int buyerId)
     {
         return repository.GetByBuyerId(buyerId);
     }
@@ -31,7 +32,7 @@ public class PurchaseController : ControllerBase
     //Henter alle køb, som er rettet mod et medlem som sælger,
     //altså de købsforespørgsler sælgeren har modtaget.
     [HttpGet("seller/{sellerId}")]
-    public ActionResult<List<Purchase>> GetBySellerId(string sellerId)
+    public ActionResult<List<Purchase>> GetBySellerId(int sellerId)
     {
         return  repository.GetBySellerId(sellerId);
     }
@@ -45,7 +46,9 @@ public class PurchaseController : ControllerBase
            return BadRequest("you cannot buy your own item!"); 
         }
         return  repository.Add(purchase);
-    }
+    } 
+
+   
     
     
     //Ændrer status på et køb. Sælgeren bruger det til at acceptere
@@ -53,6 +56,15 @@ public class PurchaseController : ControllerBase
     [HttpPut("{purchaseId}/status")]
     public ActionResult<bool> UpdatePurchaseStatus(string purchaseId,string status)
     {
-        return  repository.UpdatePurchaseStatus(purchaseId, status);
+        
+        bool succesfuldt = repository.UpdatePurchaseStatus(purchaseId, status);
+        if (!succesfuldt)
+        {
+           return NotFound("Købet er ikke fundet"); 
+        }
+
+        return Ok();
+        
+        //return  repository.UpdatePurchaseStatus(purchaseId, status);
     }
 }
