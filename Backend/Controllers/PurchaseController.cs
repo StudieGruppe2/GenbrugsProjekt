@@ -23,18 +23,18 @@ public class PurchaseController : ControllerBase
     }
 
     //Henter alle køb, som et medlem har lavet som køber.
-    [HttpGet("buyer/{buyerId}")]
-    public ActionResult<List<Purchase>> GetByBuyerId(int buyerId)
+    [HttpGet("buyer/{Buyer_Id}")]
+    public ActionResult<List<Purchase>> GetByBuyerId(int Buyer_Id)
     {
-        return repository.GetByBuyerId(buyerId);
+        return repository.GetByBuyerId(Buyer_Id);
     }
     
     //Henter alle køb, som er rettet mod et medlem som sælger,
     //altså de købsforespørgsler sælgeren har modtaget.
-    [HttpGet("seller/{sellerId}")]
-    public ActionResult<List<Purchase>> GetBySellerId(int sellerId)
+    [HttpGet("seller/{Seller_Id}")]
+    public ActionResult<List<Purchase>> GetBySellerId(int Seller_Id)
     {
-        return  repository.GetBySellerId(sellerId);
+        return  repository.GetBySellerId(Seller_Id);
     }
     
     //Opretter et nyt køb (en købsforespørgsel på en annonce).

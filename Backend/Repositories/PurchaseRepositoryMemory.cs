@@ -12,15 +12,15 @@ public class PurchaseRepositoryMemory : IPurchaseRepository
     private int nextPurchasesId = 1;
  
     // Bruges til at låse listen, så flere forespørgsler på samme tid
-    public List<Purchase> GetByBuyerId(int buyerId)
+    public List<Purchase> GetByBuyerId(int Buyer_Id)
     {
-        return purchases.Where(p => p.Buyer_Id == buyerId).ToList();
+        return purchases.Where(p => p.Buyer_Id == Buyer_Id).ToList();
     }
 
     // Henter alle køb, hvor medlemmet er sælger
-    public List<Purchase> GetBySellerId(int sellerId)
+    public List<Purchase> GetBySellerId(int Seller_Id)
     {
-        return purchases.Where(p => p.Seller_Id == sellerId).ToList();
+        return purchases.Where(p => p.Seller_Id == Seller_Id).ToList();
     }
 
 
