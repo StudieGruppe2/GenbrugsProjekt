@@ -33,7 +33,7 @@ public class MemberRepositoryMongoDB : IMemberRepository
         return memberCollection.Find(filter).FirstOrDefault();
     }
 
-    public void CreateProfile(Member member)
+    public Member CreateProfile(Member member)
     {
         // Opretter et tomt filter, så alle medlemmer medtages
         FilterDefinition<Member> filter = Builders<Member>.Filter.Empty;
@@ -56,6 +56,8 @@ public class MemberRepositoryMongoDB : IMemberRepository
         }
         
         memberCollection.InsertOne(member);
+        
+        return member;
     }
 
     public bool LoginToProfile(string Email, string Password)

@@ -6,13 +6,13 @@ public interface IAnnonceRepository
 {
     List<Annonce> GetAll();
 
-    Annonce? GetById(string annonce_id);
+    Annonce? GetById(int Annonce_Id);
 
-    List<Annonce> GetByOwnerId(string owner_id);
+    List<Annonce> GetByOwnerId(string Owner_Id);
 
     Annonce CreateNewAd(Annonce annonce);
 
-    bool DeleteAd(string annonce_id);
+    bool DeleteAd(int Annonce_Id);
 
     bool UpdateAnnonce(Annonce annonce);
 

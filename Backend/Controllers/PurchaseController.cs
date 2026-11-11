@@ -25,7 +25,7 @@ public class PurchaseController : ControllerBase
     [HttpGet("buyer/{buyerId}")]
     public ActionResult<List<Purchase>> GetByBuyerId(string buyerId)
     {
-        return
+        return repository.GetByBuyerId(buyerId);
     }
     
     //Henter alle køb, som er rettet mod et medlem som sælger,
@@ -33,14 +33,18 @@ public class PurchaseController : ControllerBase
     [HttpGet("seller/{sellerId}")]
     public ActionResult<List<Purchase>> GetBySellerId(string sellerId)
     {
-        return
+        return  repository.GetBySellerId(sellerId);
     }
     
     //Opretter et nyt køb (en købsforespørgsel på en annonce).
     [HttpPost]
     public ActionResult<Purchase> Add(Purchase purchase)
     {
-        return 
+        if (purchase.Buyer_Id == purchase.Seller_Id)
+        {
+           return BadRequest("you cannot buy your own item!"); 
+        }
+        return  repository.Add(purchase);
     }
     
     
@@ -49,6 +53,6 @@ public class PurchaseController : ControllerBase
     [HttpPut("{purchaseId}/status")]
     public ActionResult<bool> UpdatePurchaseStatus(string purchaseId,string status)
     {
-        return 
+        return  repository.UpdatePurchaseStatus(purchaseId, status);
     }
 }

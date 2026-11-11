@@ -28,36 +28,56 @@ public class AnnonceController : ControllerBase
     }
 
     // Henter en annonce ud fra id
-    [HttpGet("{annonce_id}")]
-    public ActionResult<Annonce> GetById(string annonce_id)
+    [HttpGet("{annonce_Id}")]
+    public ActionResult<Annonce> GetById(int annonce_Id)
     {
-        repository.GetById(annonce_id);
-        return
+        Annonce? annonce = repository.GetById(annonce_Id);
+        if (annonce == null)
+        {
+            return null;
+        }
+
+        return annonce;
     }
 
-    [HttpGet("owner/{ownerId}")]
-    public List<Annonce> GetByOwnerId(string owner_id)
+    [HttpGet("owner/{Owner_Id}")]
+    public List<Annonce> GetByOwnerId(string Owner_Id)
     {
-        return
+        return repository.GetByOwnerId(Owner_Id);
     }
 
     // Opretter en ny annonce
     [HttpPost]
     public ActionResult<Annonce> CreateNewAd (Annonce annonce)
     {
-        return
+        if (annonce.Title == "" || annonce.Owner_Id == "")
+        {
+            return BadRequest("Title and Owner_Id are required");
+        }
+
+        return repository.CreateNewAd(annonce);
     }
 
     [HttpDelete("{Annonce_Id}")]
-    public bool DeleteAd(string Annonce_Id)
+    public ActionResult DeleteAd(int Annonce_Id)
     {
-        return 
+        bool result = repository.DeleteAd(Annonce_Id);
+        if (!result)
+        {
+           return BadRequest("Ad Not Found"); 
+        }
+        return Ok("Ad Deleted");
     }
 
     [HttpPut("{Annonce}")]
-    public bool UpdateAnnonce(Annonce Annonce)
+    public ActionResult UpdateAnnonce(Annonce Annonce)
     {
-        return 
+        bool result = repository.UpdateAnnonce(Annonce);
+        if (!result)
+        {
+            return BadRequest("Ad not found");
+        }
+        return Ok("Ad Updated");
     }
 
 

@@ -2,7 +2,7 @@
 
 public class Annonce
 {
-    public string Annonce_Id { get; set; } = "";
+    public int Annonce_Id { get; set; } = Random.Shared.Next();
     
     public string Title { get; set; } = "";
 

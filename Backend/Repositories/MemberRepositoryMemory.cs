@@ -43,12 +43,13 @@ public class MemberRepositoryMemory : IMemberRepository
         return null;
     }
 
-    public void CreateProfile(Member member)
+    public Member CreateProfile(Member member)
     {
         member.Member_id = nextMemberId;
         nextMemberId++;
 
         members.Add(member);
+        return member;
     }
 
     public bool LoginToProfile(string Email, string Password)
