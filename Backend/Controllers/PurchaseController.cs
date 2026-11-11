@@ -1,6 +1,7 @@
 using Backend.Repositories;
 using Core;
 using Microsoft.AspNetCore.Mvc;
+
 namespace Backend.Controllers;
 
 [ApiController]
@@ -20,21 +21,22 @@ public class PurchaseController : ControllerBase
         this.repository = repository;
     }
 
-    // Måske at ActionResult skal være der
+    //Henter alle køb, som et medlem har lavet som køber.
     [HttpGet("buyer/{buyerId}")]
     public ActionResult<List<Purchase>> GetByBuyerId(string buyerId)
     {
         return
     }
     
-    // Samme spørgsmål her 
+    //Henter alle køb, som er rettet mod et medlem som sælger,
+    //altså de købsforespørgsler sælgeren har modtaget.
     [HttpGet("seller/{sellerId}")]
     public ActionResult<List<Purchase>> GetBySellerId(string sellerId)
     {
         return
     }
     
-    // POST api/purchase
+    //Opretter et nyt køb (en købsforespørgsel på en annonce).
     [HttpPost]
     public ActionResult<Purchase> Add(Purchase purchase)
     {
@@ -42,9 +44,10 @@ public class PurchaseController : ControllerBase
     }
     
     
-    // PUT api/purchase/{purchaseId}/status
+    //Ændrer status på et køb. Sælgeren bruger det til at acceptere
+    //eller afvise en købsforespørgsel.
     [HttpPut("{purchaseId}/status")]
-    public ActionResult<bool> UpdatePurchaseStatus(string purchaseId, string status)
+    public ActionResult<bool> UpdatePurchaseStatus(string purchaseId,string status)
     {
         return 
     }
