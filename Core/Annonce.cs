@@ -1,8 +1,10 @@
-﻿namespace Genbrugsprojekt.Core;
+﻿namespace Core;
 
 public class Annonce
 {
     public string Annonce_Id { get; set; } = "";
+    
+    public string Title { get; set; } = "";
 
     public string Category { get; set; } = "";
 

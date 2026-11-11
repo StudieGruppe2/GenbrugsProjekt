@@ -2,9 +2,10 @@
 
 public class Member
 {
-    public string Member_id { get; set;} = "";
+    public int Member_id { get; set;} = Random.Shared.Next();
     public string Name {get; set;} = "";
-    public string Mail {get; set;} = "";
+   
+    public string Email {get; set;} = "";
 
     public string Phonenumber {get; set;} = "";
 

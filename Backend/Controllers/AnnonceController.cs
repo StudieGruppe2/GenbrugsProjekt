@@ -31,6 +31,7 @@ public class AnnonceController : ControllerBase
     [HttpGet("{annonce_id}")]
     public ActionResult<Annonce> GetById(string annonce_id)
     {
+        repository.GetById(annonce_id);
         return
     }
 

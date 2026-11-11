@@ -22,16 +22,23 @@ public class MemberController : ControllerBase
 
     //find medlem med id
     [HttpGet("{Member_id}")]
-    public Member GetById(string Member_id)
+    public Member GetById(int Member_id)
     {
-        return 
+        Member? member = repository.GetById(Member_id);
+        if (member == null)
+        {
+            return null;
+        }
+
+        return member;
     }
 
     //opret profil
     [HttpPost("{Member}")]
     public Member CreateProfile(Member member)
     {
-        return 
+        repository.CreateProfile(member);
+        return member;
     }
 
     //Login til profil
@@ -41,7 +48,8 @@ public class MemberController : ControllerBase
     //401 Unauthorized ved forkert login
     public IActionResult LoginToProfile(string Email, string Password)
     {
-        return
+        repository.LoginToProfile(Email, Password);
+        return Ok();
     }
     
 
