@@ -8,7 +8,20 @@ public class AnnonceRepositoryMongoDB : IAnnonceRepository
 {
     public AnnonceRepositoryMongoDB()
     {
-        
+          // Fortæller MongoDB, at Annonce_Id er nøglen (_id)
+        if (!BsonClassMap.IsClassMapRegistered(typeof(Annonce)))
+        {
+            BsonClassMap<Annonce> map = new BsonClassMap<Annonce>();
+            map.AutoMap();
+            map.MapIdMember(typeof(Annonce).GetProperty("Annonce_Id")!);
+            BsonClassMap.RegisterClassMap(map);
+        }
+
+        string connectionString = ""; // <-- Her skrives jeres egen connection string
+        MongoClient client = new MongoClient(connectionString);
+        IMongoDatabase database = client.GetDatabase("GenbrugsMarkedDB");
+
+        annonceCollection = database.GetCollection<Annonce>("Annoncer");
     }
 
     public List<Annonce> GetAll()
