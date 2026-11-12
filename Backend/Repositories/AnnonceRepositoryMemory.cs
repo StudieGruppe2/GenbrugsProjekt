@@ -18,7 +18,7 @@ public class AnnonceRepositoryMemory : IAnnonceRepository
             Category = "Jakker",
             Description = "Varm dunjakke, brugt én vinter.",
             Price = 250,
-            Owner_Id = "m1",
+            Owner_Id = 1,
             Published_Date = DateTime.Now.AddDays(-3),
             Location = "Genbrugsrum A1.04"
         });
@@ -30,7 +30,7 @@ public class AnnonceRepositoryMemory : IAnnonceRepository
             Category = "Bukser",
             Description = "Næsten som nye.",
             Price = 150,
-            Owner_Id = "m1",
+            Owner_Id = 1,
             Published_Date = DateTime.Now.AddDays(-1),
             Location = "Ikke på Eaaa"
         });
@@ -42,7 +42,7 @@ public class AnnonceRepositoryMemory : IAnnonceRepository
             Category = "Trøjer",
             Description = "Hjemmestrikket uld, str. L.",
             Price = 100,
-            Owner_Id = "m2",
+            Owner_Id = 2,
             Published_Date = DateTime.Now,
             Location = "Genbrugsrum B2.12"
         });
@@ -66,17 +66,10 @@ public class AnnonceRepositoryMemory : IAnnonceRepository
         return null;
     } 
 
-    public List<Annonce> GetByOwnerId(string Owner_Id)
+    // Henter alle annoncer, som et bestemt medlem ejer (tom liste, hvis ingen)
+    public List<Annonce> GetByOwnerId(int Owner_Id)
     {
-        foreach (Annonce annonce in annoncer)
-        {
-            if (annonce.Owner_Id == Owner_Id)
-            {
-                return annoncer;
-            }
-        }
-
-        return null;
+        return annoncer.Where(a => a.Owner_Id == Owner_Id).ToList();
     }
 
     public Annonce CreateNewAd(Annonce annonce)

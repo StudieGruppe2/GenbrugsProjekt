@@ -34,14 +34,14 @@ public class AnnonceController : ControllerBase
         Annonce? annonce = repository.GetById(annonce_Id);
         if (annonce == null)
         {
-            return null;
+            return NotFound("Annoncen findes ikke.");
         }
 
         return annonce;
     }
 
     [HttpGet("owner/{Owner_Id}")]
-    public List<Annonce> GetByOwnerId(string Owner_Id)
+    public List<Annonce> GetByOwnerId(int Owner_Id)
     {
         return repository.GetByOwnerId(Owner_Id);
     }
@@ -50,7 +50,7 @@ public class AnnonceController : ControllerBase
     [HttpPost]
     public ActionResult<Annonce> CreateNewAd (Annonce annonce)
     {
-        if (annonce.Title == "" || annonce.Owner_Id == "")
+        if (annonce.Title == "" || annonce.Owner_Id == 0)
         {
             return BadRequest("Title and Owner_Id are required");
         }
@@ -85,9 +85,9 @@ public class AnnonceController : ControllerBase
     // De eneste tilladte statusser
     private List<string> allowedStatus = new List<string> { "Active", "Reserved", "Sold", "Inactive" };
 
-    // Rute: /annonce/{annonceId}/status?status=Sold
+    // Rute: /annonce/{Annonce_Id}/status?Status=Sold
     // Put fordi vi opdaterer en annonce, der allerede findes
-    [HttpPut("{annonceId}/status")]
+    [HttpPut("{Annonce_Id}/status")]
     public IActionResult UpdateStatus(int Annonce_Id, string Status)
     {
         // Stopper, hvis status ikke er en af de fire tilladte

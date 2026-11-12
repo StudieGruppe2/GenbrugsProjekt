@@ -1,4 +1,4 @@
-﻿namespace Core;
+namespace Core;
 
 public class Purchase
 {
@@ -12,6 +12,6 @@ public class Purchase
     // Id'et på det medlem, der sælger (ejer annoncen)
     public int Seller_Id { get; set; } = Random.Shared.Next();
 
-    // Købets tilstand: "Afventer", "Accepteret" eller "Afvist"
-    public string Status { get; set; } = "Afventer";
+    // Købets tilstand: "Pending", "Accepted" eller "Rejected"
+    public string Status { get; set; } = "Pending";
 }

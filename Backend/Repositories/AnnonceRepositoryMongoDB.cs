@@ -47,9 +47,9 @@ public class AnnonceRepositoryMongoDB : IAnnonceRepository
    
     
     // henter alle annoncer tilhørende ejeren af annoncerne
-    public List<Annonce> GetByOwnerId(string Owner_Id)
+    public List<Annonce> GetByOwnerId(int Owner_Id)
     {
-        FilterDefinition<Annonce> filter = Builders<Annonce>.Filter.Eq("_id", Owner_Id);
+        FilterDefinition<Annonce> filter = Builders<Annonce>.Filter.Eq("Owner_Id", Owner_Id);
         return annonceCollection.Find(filter).ToList();
     }
 

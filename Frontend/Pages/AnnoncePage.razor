@@ -1,0 +1,245 @@
+@page "/annoncer"
+@using Core
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<PageTitle>Annoncer</PageTitle>
+
+<h1>Annoncer</h1>
+
+<!-- SØGNING OG KATEGORI -->
+<div class="soege-linje">
+    <input class="form-control" placeholder="Søg efter dit tøj"
+           @bind="søgeTekst" @bind:event="oninput" />
+
+    <select class="form-select" @bind="valgtKategori">
+        <option value="">Alle kategorier</option>
+        @foreach (string kategori in HentKategorier())
+        {
+            <option value="@kategori">@kategori</option>
+        }
+    </select>
+</div>
+
+<!-- BESKED, hvis noget går galt -->
+@if (fejlBesked != "")
+{
+    <p class="text-danger">@fejlBesked</p>
+}
+
+<!-- BESKED efter anmodning om køb -->
+@if (koebBesked != "")
+{
+    <p class="text-success">@koebBesked</p>
+}
+
+<!-- ALLE ANNONCER SOM KORT -->
+@if (HentFiltreredeAnnoncer().Count == 0)
+{
+    <p>Ingen annoncer matcher din søgning.</p>
+}
+
+<div class="annonce-grid">
+    @foreach (Annonce annonce in HentFiltreredeAnnoncer())
+    {
+        <div class="annonce-kort" @onclick="() => VisDetaljer(annonce.Annonce_Id)">
+
+            @if (annonce.Picture != "")
+            {
+                <img class="kort-billede" src="@annonce.Picture" alt="@annonce.Title" />
+            }
+            else
+            {
+                <div class="kort-billede ingen-billede">Intet billede</div>
+            }
+
+            <div class="kort-tekst">
+                <div>
+                    <p class="titel">@annonce.Title</p>
+                    <p class="pris">@annonce.Price kr.</p>
+                </div>
+
+                <!-- Hjertet: stopPropagation gør, at klik på hjertet ikke også åbner detaljer -->
+                <button class="hjerte" @onclick="() => SkiftFavorit(annonce.Annonce_Id)" @onclick:stopPropagation="true">
+                    @if (favoritter.Contains(annonce.Annonce_Id))
+                    {
+                        <span>♥</span>
+                    }
+                    else
+                    {
+                        <span>♡</span>
+                    }
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- MODALVINDUE: detaljer om den valgte annonce -->
+@if (valgtAnnonce != null)
+{
+    <!-- Den mørke baggrund. Klik udenfor vinduet lukker det. -->
+    <div class="modal-baggrund" @onclick="LukDetaljer">
+
+        <!-- Selve vinduet. stopPropagation gør, at klik inde i vinduet ikke lukker det. -->
+        <div class="modal-vindue" @onclick:stopPropagation="true">
+            <button class="btn-close luk-knap" @onclick="LukDetaljer"></button>
+
+            @if (valgtAnnonce.Picture != "")
+            {
+                <img class="detalje-billede" src="@valgtAnnonce.Picture" alt="@valgtAnnonce.Title" />
+            }
+
+            <h3>@valgtAnnonce.Title</h3>
+            <p class="pris">@valgtAnnonce.Price kr.</p>
+            <p>@valgtAnnonce.Description</p>
+            <p><b>Kategori:</b> @valgtAnnonce.Category</p>
+            <p><b>Lokation:</b> @valgtAnnonce.Location</p>
+            <p><b>Oprettet:</b> @valgtAnnonce.Published_Date.ToString("dd.MM.yyyy")</p>
+
+            @if (valgtAnnonce.Owner_Id == køberId)
+            {
+                <p class="text-muted">Dette er din egen annonce.</p>
+            }
+            else
+            {
+                <button class="btn koeb-knap" @onclick="AnmodOmKoeb">Anmod om køb</button>
+            }
+
+            @if (modalFejl != "")
+            {
+                <p class="text-danger mt-2">@modalFejl</p>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    // Adressen på backenden (se Backend/Properties/launchSettings.json)
+    const string apiUrl = "http://localhost:5125";
+
+    // Data fra backend
+    private List<Annonce> annoncer = new List<Annonce>();
+
+    // Det brugeren skriver og vælger
+    private string søgeTekst = "";
+    private string valgtKategori = "";
+
+    // Den annonce der vises detaljer om (null = ingen)
+    private Annonce? valgtAnnonce = null;
+
+    // Id'er på de annoncer brugeren har hjertet (gemmes kun mens siden er åben)
+    private List<int> favoritter = new List<int>();
+
+    private string fejlBesked = "";
+
+    // Beskeder om anmodning om køb
+    private string koebBesked = "";
+    private string modalFejl = "";
+
+    // MIDLERTIDIGT: Id'et på den der køber.
+    // Erstattes af det indloggede medlems Member_Id, når member-delen er klar.
+    private int køberId = 2;
+
+
+    // Kaldes automatisk, når siden åbner
+    protected override async Task OnInitializedAsync()
+    {
+        await HentAnnoncer();
+    }
+
+    // Henter alle annoncer fra backend: GET /annonce
+    private async Task HentAnnoncer()
+    {
+        try
+        {
+            annoncer = await Http.GetFromJsonAsync<List<Annonce>>($"{apiUrl}/annonce") ?? new List<Annonce>();
+        }
+        catch
+        {
+            fejlBesked = "Kunne ikke hente annoncer. Kører backend?";
+        }
+    }
+
+    // Henter én annonce fra backend og viser den: GET /annonce/{id}
+    private async Task VisDetaljer(int annonceId)
+    {
+        modalFejl = "";
+        koebBesked = "";
+        valgtAnnonce = await Http.GetFromJsonAsync<Annonce>($"{apiUrl}/annonce/{annonceId}");
+    }
+
+    private void LukDetaljer()
+    {
+        valgtAnnonce = null;
+    }
+
+    // Sender en købsanmodning til backend: POST /purchase
+    // Backend tjekker annoncen, finder sælgeren og reserverer annoncen.
+    private async Task AnmodOmKoeb()
+    {
+        if (valgtAnnonce == null)
+        {
+            return;
+        }
+
+        Purchase purchase = new Purchase();
+        purchase.Annonce_Id = valgtAnnonce.Annonce_Id;
+        purchase.Buyer_Id = køberId;
+
+        HttpResponseMessage svar = await Http.PostAsJsonAsync($"{apiUrl}/purchase", purchase);
+
+        if (svar.IsSuccessStatusCode)
+        {
+            koebBesked = $"Din anmodning om at købe \"{valgtAnnonce.Title}\" er sendt til sælgeren.";
+            valgtAnnonce = null;
+
+            // Henter annoncerne igen. Den reserverede annonce forsvinder fra listen.
+            await HentAnnoncer();
+        }
+        else
+        {
+            // Viser backendens fejlbesked, fx "Du kan ikke købe din egen annonce."
+            modalFejl = await svar.Content.ReadAsStringAsync();
+        }
+    }
+
+    // Tilføjer eller fjerner en annonce fra favoritter
+    private void SkiftFavorit(int annonceId)
+    {
+        if (favoritter.Contains(annonceId))
+        {
+            favoritter.Remove(annonceId);
+        }
+        else
+        {
+            favoritter.Add(annonceId);
+        }
+    }
+
+    // Finder de annoncer, der skal vises. Hvert filter bruges kun, hvis det er udfyldt.
+    private List<Annonce> HentFiltreredeAnnoncer()
+    {
+        // Kun aktive annoncer vises
+        List<Annonce> resultat = annoncer.Where(a => a.Status == "Active").ToList();
+
+        if (søgeTekst != "")
+        {
+            resultat = resultat.Where(a => a.Title.ToLower().Contains(søgeTekst.ToLower())).ToList();
+        }
+
+        if (valgtKategori != "")
+        {
+            resultat = resultat.Where(a => a.Category == valgtKategori).ToList();
+        }
+
+        // Nyeste annoncer først
+        return resultat.OrderByDescending(a => a.Published_Date).ToList();
+    }
+
+    // Laver listen til kategori-dropdown'en ud fra annoncerne (uden dubletter)
+    private List<string> HentKategorier()
+    {
+        return annoncer.Select(a => a.Category).Distinct().OrderBy(k => k).ToList();
+    }
+}

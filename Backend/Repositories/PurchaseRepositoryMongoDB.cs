@@ -29,13 +29,13 @@ public class PurchaseRepositoryMongoDB : IPurchaseRepository
 
     public List<Purchase> GetByBuyerId(int Buyer_Id)
     {
-        FilterDefinition<Purchase> filter = Builders<Purchase>.Filter.Eq("_id", Buyer_Id);
+        FilterDefinition<Purchase> filter = Builders<Purchase>.Filter.Eq("Buyer_Id", Buyer_Id);
         return purchaseCollection.Find(filter).ToList();
     }
     
     public List<Purchase> GetBySellerId(int Seller_Id)
     {
-        FilterDefinition<Purchase> filter = Builders<Purchase>.Filter.Eq("_id", Seller_Id);
+        FilterDefinition<Purchase> filter = Builders<Purchase>.Filter.Eq("Seller_Id", Seller_Id);
         return purchaseCollection.Find(filter).ToList();
     }
 
@@ -60,6 +60,9 @@ public class PurchaseRepositoryMongoDB : IPurchaseRepository
             //Giver købsanmodningen et ID, der er 1 højere end det højeste
             purchase.Purchase_Id = last.Purchase_Id + 1;
         }
+
+        // Et nyt køb starter altid som "Pending"
+        purchase.Status = "Pending";
 
         //Gemmer købsanmodningen i MongoDB
         purchaseCollection.InsertOne(purchase);

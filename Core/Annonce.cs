@@ -1,4 +1,4 @@
-﻿namespace Core;
+namespace Core;
 
 public class Annonce
 {
@@ -16,13 +16,13 @@ public class Annonce
     public double Price { get; set; }
 
     // Id'et på det medlem, der ejer annoncen
-    public string Owner_Id { get; set; } = "";
+    public int Owner_Id { get; set; }
 
     public DateTime Published_Date { get; set; }
 
     // Lokale på Eaaa, hvor varen ligger - eller "Ikke på Eaaa"
     public string Location { get; set; } = "";
 
-    // Annoncens tilstand: "Aktiv", "Reserveret", "Solgt" eller "Inaktiv"
-    public string Status { get; set; } = "Aktiv";
+    // Annoncens tilstand: "Active", "Reserved", "Sold" eller "Inactive"
+    public string Status { get; set; } = "Active";
 }

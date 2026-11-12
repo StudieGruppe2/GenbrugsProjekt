@@ -8,7 +8,7 @@ public interface IAnnonceRepository
 
     Annonce? GetById(int Annonce_Id);
 
-    List<Annonce> GetByOwnerId(string Owner_Id);
+    List<Annonce> GetByOwnerId(int Owner_Id);
 
     Annonce CreateNewAd(Annonce annonce);
 

@@ -1,10 +1,9 @@
-﻿namespace Core;
+namespace Core;
 
 public class Member
 {
-    public int Member_id { get; set;} = Random.Shared.Next();
+    public int Member_id { get; set;}
     public string Name {get; set;} = "";
-   
     public string Email {get; set;} = "";
 
     public string Phonenumber {get; set;} = "";
