@@ -72,9 +72,17 @@ public class PurchaseRepositoryMongoDB : IPurchaseRepository
     // Opdaterer kun feltet Status. Resten af købet røres ikke.
     public bool UpdatePurchaseStatus(int Purchase_Id, string status)
     {
-        var update = Builders<Purchase>.Update.Set("Purchase_Status", status);
+        // Finder købsanmodningen ud fra dens ID
+        FilterDefinition<Purchase> filter = Builders<Purchase>.Filter.Eq(p => p.Purchase_Id, Purchase_Id);
 
-        return update.MatchedCount>0;
+        // Angiver, at det kun er status, der skal ændres
+        UpdateDefinition<Purchase> update = Builders<Purchase>.Update.Set(p => p.Status, status);
+
+        // Opdaterer købsanmodningen i MongoDB
+        var result = purchaseCollection.UpdateOne(filter, update);
+
+        // Returnerer true, hvis købsanmodningen blev fundet
+        return result.MatchedCount > 0;
     }
     
     
