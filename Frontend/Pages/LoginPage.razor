@@ -1,5 +1,153 @@
-<h1>Logind på din profil eller bliv en del af klubben her!</h1>
+@page "/"
+@page "/Login"
+@using System.Net.Http.Json
+@using Core
+@inject NavigationManager Navigation
+@inject HttpClient Http
+
+
+
+<div class="auth-container">
+
+    <!--Logind-->
+    <div class="auth-box">
+
+        <h2>Log ind</h2>
+        <p>Velkommen tilbage til EaaaShare!</p>
+
+        <div class="form-group">
+            <label for="login-email">E-mail</label>
+            <input id="login-email"
+                   type="email"
+                   class="form-control"
+                   placeholder="Indtast din e-mail"
+                   @bind="LoginEmail" />
+        </div>
+
+        <div class="form-group">
+            <label for="login-password">Adgangskode</label>
+            <input id="login-password"
+                   type="password"
+                   class="form-control"
+                   placeholder="Indtast din adgangskode"
+                   @bind="LoginPassword" />
+        </div>
+
+        <button class="auth-button" @onclick="ValidateLogin">
+            Log ind
+        </button>
+        @if (!string.IsNullOrEmpty(LoginMessage))
+        {
+            <p class="text-danger">@LoginMessage</p>
+        }
+
+    </div>
+
+    <!-- Opret profil -->
+    <div class="auth-box">
+
+        <h2>Opret profil</h2>
+        <p>Bliv en del af EaaaShare!</p>
+
+        <div class="form-group">
+            <label for="register-name">Navn</label>
+            <input id="register-name"
+                   type="text"
+                   class="form-control"
+                   placeholder="Indtast dit navn"
+                   @bind="RegisterName" />
+        </div>
+
+        <div class="form-group">
+            <label for="register-email">E-mail</label>
+            <input id="register-email"
+                   type="email"
+                   class="form-control"
+                   placeholder="Indtast din e-mail"
+                   @bind="RegisterEmail" />
+        </div>
+
+        <div class="form-group">
+            <label for="register-password">Adgangskode</label>
+            <input id="register-password"
+                   type="password"
+                   class="form-control"
+                   placeholder="Opret en adgangskode"
+                   @bind="RegisterPassword" />
+        </div>
+
+        <button class="auth-button" @onclick="CreateProfile">
+            Opret profil
+        </button>
+
+    </div>
+
+</div>
 
 @code {
+
+    //Adressen på backenden
+    const string apiUrl = "http://localhost:?????";
+
+    //Login - udfyldes i formualen
+    private string LoginEmail = "";
+    private string LoginPassword = "";
+
+    //Til at give fejlbesked ved logind
+    public string LoginMessage = "";
+
+    //Opret profil - udfyldes i formularen
+    private string RegisterName = "";
+    private string RegisterEmail = "";
+    private string RegisterPassword = "";
     
+    
+    //validere de login oplysninger vi har fået
+    private async Task ValidateLogin()
+    {
+        var data = new Dictionary<string, string>
+        {
+            // Opretter en samling med Email og Password ud fra det, brugeren har skrevet i loginformularen.
+            { "Email", LoginEmail },
+            { "Password", LoginPassword }
+        };
+
+        //Sender loginoplysningerne til backend med HTTP POST.
+        //FormUrlEncodedContent gør data til formulardata, som controlleren kan modtage med [FromForm].
+        //await venter på svaret uden at blokere tråden.
+        var response = await Http.PostAsync($"{apiUrl}/Member/login", new FormUrlEncodedContent(data));
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/annoncer");
+        }
+        else
+        {
+            LoginMessage = "Forkert e-mail eller adgangskode";
+        }
+    }
+   
+    
+    //Gemmer det nyeoprettede medlem
+    private async Task CreateProfile()
+    {
+        //Opretter et Member-objekt ud fra formularen
+        Member newMember = new Member
+        {
+            Name = RegisterName,
+            Email = RegisterEmail,
+            Password = RegisterPassword
+        };
+
+        //Sender den nye profil til backend
+        var response = await Http.PostAsJsonAsync($"{apiUrl}/Member", newMember);
+
+        if (response.IsSuccessStatusCode)
+        {
+            //Rydder formularen efter oprettelse
+            RegisterName = "";
+            RegisterEmail = "";
+            RegisterPassword = "";
+        }
+    }
 }
