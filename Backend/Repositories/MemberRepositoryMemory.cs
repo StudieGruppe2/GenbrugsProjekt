@@ -6,9 +6,7 @@ public class MemberRepositoryMemory : IMemberRepository
 {
     //Datalager
     private List<Member> members = new List<Member>();
-
-    private int nextMemberId = 1;
-
+    
     // Constructor - opretter testdata, når Memory-repositoryet oprettes
     public MemberRepositoryMemory()
     {
@@ -45,8 +43,7 @@ public class MemberRepositoryMemory : IMemberRepository
 
     public Member CreateProfile(Member member)
     {
-        member.Member_id = nextMemberId;
-        nextMemberId++;
+        member.Member_id = members.Count == 0 ? 1 : members.Max(m => m.Member_id) + 1; 
 
         members.Add(member);
         return member;
