@@ -126,4 +126,11 @@ public class AnnonceRepositoryMongoDB : IAnnonceRepository
         // Returnerer true, hvis annoncen blev fundet
         return result.MatchedCount > 0;
     }
+    
+    
+    //Opdatere statussen på annoncen
+    public bool UpdateAnnonceStatus(Annonce annonce)
+    {
+   
+    }
 }

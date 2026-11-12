@@ -122,5 +122,8 @@ public class AnnonceRepositoryMemory : IAnnonceRepository
         return true;
     }
 
-    
+    public bool UpdateAnnonceStatus(Annonce annonce)
+    {
+   
+    }
 }

@@ -80,8 +80,14 @@ public class AnnonceController : ControllerBase
         return Ok("Ad Updated");
     }
 
+    [HttpPut("{Annonce_Id}")]
+    public ActionResult UpdateAnnonceStatus(Annonce Annonce)
+    {
+        
+    }
 
 
+// status på annonce: Active, Reserved, Sold, Inactive
 
 
 

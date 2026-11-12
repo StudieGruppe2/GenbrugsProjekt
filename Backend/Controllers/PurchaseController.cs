@@ -47,14 +47,13 @@ public class PurchaseController : ControllerBase
         }
         return  repository.Add(purchase);
     } 
-
-   
+    
     
     
     //Ændrer status på et køb. Sælgeren bruger det til at acceptere
     //eller afvise en købsforespørgsel.
     [HttpPut("{purchaseId}/status")]
-    public ActionResult<bool> UpdatePurchaseStatus(string purchaseId,string status)
+    public ActionResult<bool> UpdatePurchaseStatus(int purchaseId,string status)
     {
         
         bool succesfuldt = repository.UpdatePurchaseStatus(purchaseId, status);
@@ -65,6 +64,8 @@ public class PurchaseController : ControllerBase
 
         return Ok();
         
-        //return  repository.UpdatePurchaseStatus(purchaseId, status);
+        //return repository.UpdatePurchaseStatus(purchaseId, status);
+        
+        // accceptet, rejected, pending
     }
 }

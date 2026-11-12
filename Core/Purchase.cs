@@ -2,9 +2,9 @@
 
 public class Purchase
 {
-    public string Purchase_Id { get; set; } = "";
+    public int Purchase_Id { get; set; } = Random.Shared.Next();
 
-    public string Annonce_Id { get; set; } = "";
+    public int Annonce_Id { get; set; } = Random.Shared.Next();
 
     // Id'et på det medlem, der vil købe
      public int Buyer_Id { get; set;} = Random.Shared.Next();

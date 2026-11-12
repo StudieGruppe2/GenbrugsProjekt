@@ -66,13 +66,15 @@ public class PurchaseRepositoryMongoDB : IPurchaseRepository
 
         return purchase;
     }
-    
-    
+
+   
 
     // Opdaterer kun feltet Status. Resten af købet røres ikke.
-    public bool UpdatePurchaseStatus(string purchaseId, string status)
+    public bool UpdatePurchaseStatus(int Purchase_Id, string status)
     {
-        return 
+        var update = Builders<Purchase>.Update.Set("Purchase_Status", status);
+
+        return update.MatchedCount>0;
     }
     
     

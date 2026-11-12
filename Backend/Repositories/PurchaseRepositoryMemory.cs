@@ -32,10 +32,11 @@ public class PurchaseRepositoryMemory : IPurchaseRepository
         purchases.Add(purchase);
         return purchase;
     }
+    
 
-    public bool UpdatePurchaseStatus(string purchaseId, string status)
+    public bool UpdatePurchaseStatus(int purchaseId, string status)
     {
-          Purchase? purchase = purchases.FirstOrDefault(p => p.Purchase_Id == purchaseId);
+        Purchase? purchase = purchases.FirstOrDefault(p => p.Purchase_Id == purchaseId);
         if (purchase == null)
         {
             return false;
