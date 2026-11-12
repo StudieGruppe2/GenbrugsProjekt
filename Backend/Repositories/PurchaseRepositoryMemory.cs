@@ -26,8 +26,8 @@ public class PurchaseRepositoryMemory : IPurchaseRepository
 
     public Purchase Add(Purchase purchase)
     {
-        purchase.Purchase_Id = nextPurchasesId;
-        nextPurchasesId++;
+        purchase.Purchase_Id = purchases.Count == 0 ? 1 : purchases.Max(m => m.Purchase_Id) + 1; 
+
 
         // Et nyt køb starter altid som "Pending"
         purchase.Status = "Pending";
