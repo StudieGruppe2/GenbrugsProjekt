@@ -1,5 +1,240 @@
-<h3>MyPage</h3>
+
+@page "/minside"
+@using System.Net.Http.Json
+@using Core
+@inject NavigationManager Navigation
+@inject HttpClient Http
+
+<div class="mypage">
+
+    <h1>Min side</h1>
+    <p>Her kan du administrere dine annoncer og se købsanmodninger.</p>
+
+    <div class="dashboard">
+
+        <!-- MINE ANNONCER -->
+        <section class="box">
+
+            <div class="box-header">
+                <h2>Mine annoncer</h2>
+                <button class="green-btn" @onclick="() => showModal = true">
+                    + Opret annonce
+                </button>
+            </div>
+
+            @foreach (Annonce annonce in annoncer)
+            {
+                <div class="annonce">
+                    <div>
+                        <h4>@annonce.Title</h4>
+                        <p>@annonce.Price kr.</p>
+                    </div>
+
+                    <div>
+                        <button class="icon-btn">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+
+                        <button class="icon-btn">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+
+            @if (annoncer.Count == 0)
+            {
+                <p>Ingen annoncer endnu.</p>
+            }
+
+        </section>
+
+        <!-- KØBSANMODNINGER -->
+        <section class="box">
+
+            <h2>Købsanmodninger</h2>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Annonce-ID</th>
+                            <th>Køber-ID</th>
+                            <th>Status</th>
+                            <th>Handling</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (Purchase purchase in purchases)
+                        {
+                            <tr>
+                                <td>@purchase.Annonce_Id</td>
+                                <td>@purchase.Buyer_Id</td>
+                                <td>@purchase.Status</td>
+                                <td>
+                                    <button class="green-btn"@onclick='() => UpdateStatus(purchase.Purchase_Id, "Accepted")'> Accepter </button>
+
+                                    <button class="red-btn"@onclick='() => UpdateStatus(purchase.Purchase_Id, "Rejected")'> Afslå </button>                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (purchases.Count == 0)
+            {
+                <p>Ingen købsanmodninger endnu.</p>
+            }
+
+        </section>
+
+    </div>
+</div>
+
+<!-- MODALVINDUE TIL OPRET ANNONCE -->
+@if (showModal)
+{
+    <div class="modal-overlay">
+        <div class="modal-box">
+
+            <div class="box-header">
+                <h2>Opret annonce</h2>
+
+                <button class="icon-btn" @onclick="() => showModal = false"> ✕ </button>
+            </div>
+
+            <div class="modal-form">
+
+                <!-- Navn på vare -->
+                <label>Navn på vare</label>
+                <input type="text"
+                       placeholder="Varens navn"
+                       @bind="newAnnonce.Title" />
+
+                <!-- Kategori -->
+                <label>Kategori</label>
+                <select @bind="newAnnonce.Category">
+                    <option value="">Vælg kategori</option>
+                    <option value="Bolig">Bolig</option>
+                    <option value="Tøj">Tøj</option>
+                    <option value="Smykker">Smykker</option>
+                    <option value="Cykler">Cykler</option>
+                    <option value="Elektronik">Elektronik</option>
+                </select>
+
+                <!-- Billede -->
+                <label>Billede (URL)</label>
+                <input type="text"
+                       placeholder="Indsæt link til billede"
+                       @bind="newAnnonce.Picture" />
+
+                <!-- Beskrivelse -->
+                <label>Beskrivelse</label>
+                <textarea rows="3"
+                          placeholder="Beskriv varen"
+                          @bind="newAnnonce.Description"></textarea>
+
+                <!-- Pris -->
+                <label>Pris (kr.)</label>
+                <input type="number"
+                       min="0"
+                       @bind="newAnnonce.Price" />
+
+                <!-- Lokation -->
+                <label>Lokation</label>
+                <input type="text"
+                       placeholder="Fx Aarhus"
+                       @bind="newAnnonce.Location" />
+
+                <!-- Dato for opslag -->
+                <label>Dato for opslag</label>
+                <input type="date"
+                       @bind="newAnnonce.Published_Date" />
+
+                <!-- Status -->
+                <label>Status</label>
+                <select @bind="newAnnonce.Status">
+                    <option value="Aktiv">Aktiv</option>
+                    <option value="Inaktiv">Inaktiv</option>
+                    <option value="Reserveret">Reserveret</option>
+                    <option value="Solgt">Solgt</option>
+                </select>
+
+                <div class="modal-actions">
+                    <button class="red-btn"
+                            @onclick="() => showModal = false">
+                        Annuller
+                    </button>
+
+                    <button class="green-btn"
+                            @onclick="CreateNewAd">
+                        Opret annonce
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
 
 @code {
+    const string apiUrl = "http://localhost:????";
     
+    private bool showModal = false;
+    
+    //Data fra backend
+    private List<Annonce> annoncer = new();
+    private List<Purchase> purchases = new();
+
+    //Det der udfyldes i formularen for annonceoprettelse
+    private Annonce newAnnonce = new();
+    private string Status = "";
+    private int Purchase_Id = 0;
+    
+    
+    //Kaldes når siden åbner
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    // Henter køb og annoncer fra backend
+    private async Task LoadData()
+    {
+        purchases = await Http.GetFromJsonAsync<List<Purchase>>($"{apiUrl}/Purchase") ?? new(); //???
+        annoncer = await Http.GetFromJsonAsync<List<Annonce>>($"{apiUrl}/Annonce") ?? new();//???
+    }
+
+    
+    //Opretter en annonce i backend
+    private async Task CreateNewAd()
+    {
+        var response = await Http.PostAsJsonAsync($"{apiUrl}/Annonce", newAnnonce);
+
+        if (response.IsSuccessStatusCode)
+        {
+            newAnnonce = new();
+            showModal = false; // lukker modalvinduet
+            await LoadData();
+        }
+    }
+    
+    
+    
+    //Opdaterer status på en bestemt købsanmodning
+    private async Task UpdateStatus(int Purchase_Id, string Status)
+    {
+        var response = await Http.PutAsJsonAsync($"{apiUrl}/Purchase/{Purchase_Id}", Status);
+
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadData();
+        }
+    }
+
+    
+    
+    
+
 }
