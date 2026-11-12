@@ -1,9 +1,9 @@
 ﻿<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
 
-        <a class="navbar-brand" href="">
+        <NavLink class="navbar-brand" href="/">
             ClothingClub
-        </a>
+        </NavLink>
 
         <button class="navbar-toggler"
                 type="button"
@@ -13,7 +13,6 @@
 
         <div class="@NavMenuCssClass navbar-collapse">
 
-            <!-- Menupunkter til højre -->
             <div class="navbar-nav ms-auto align-items-lg-center gap-3">
 
                 <NavLink class="nav-link"
@@ -26,10 +25,11 @@
                     Min side
                 </NavLink>
 
-                <button class="btn login-button">
+                <NavLink class="btn login-button"
+                         href="/login">
                     <i class="bi bi-box-arrow-right"></i>
                     Log ud
-                </button>
+                </NavLink>
 
             </div>
         </div>
