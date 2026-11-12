@@ -22,7 +22,7 @@
                    type="email"
                    class="form-control"
                    placeholder="Indtast din e-mail"
-                   @bind="LoginEmail" />
+                   @bind="LoginEmail" /> <!--gemmer den værdi som brugeren skriver i feltet og binder den til LoginEmail variablen-->
         </div>
 
         <div class="form-group">
@@ -31,13 +31,13 @@
                    type="password"
                    class="form-control"
                    placeholder="Indtast din adgangskode"
-                   @bind="LoginPassword" />
+                   @bind="LoginPassword" /> <!--gemmer den værdi brugeren skriver og binder den til LoginPassword variablen-->
         </div>
 
         <button class="auth-button" @onclick="ValidateLogin">
             Log ind
         </button>
-        @if (!string.IsNullOrEmpty(LoginMessage))
+        @if (!string.IsNullOrEmpty(LoginMessage)) //den som viser fejlbesked til brugeren hvis deres password eller mail er forkert
         {
             <p class="text-danger">@LoginMessage</p>
         }
@@ -56,7 +56,7 @@
                    type="text"
                    class="form-control"
                    placeholder="Indtast dit navn"
-                   @bind="RegisterName" />
+                   @bind="RegisterName" /> <!--binder værdien til RegisterName variablen-->
         </div>
 
         <div class="form-group">
@@ -65,7 +65,16 @@
                    type="email"
                    class="form-control"
                    placeholder="Indtast din e-mail"
-                   @bind="RegisterEmail" />
+                   @bind="RegisterEmail" /> <!--binder værdien til RegisterEmail variablen-->
+        </div>
+        
+        <div class="form-group">
+            <label for="register-email">E-mail</label>
+            <input id="register-email"
+                   type="email"
+                   class="form-control"
+                   placeholder="Indtast din e-mail"
+                   @bind="RegisterPhonenumber" /> <!--binder værdien til RegisterPhonenumber variablen-->
         </div>
 
         <div class="form-group">
@@ -74,10 +83,10 @@
                    type="password"
                    class="form-control"
                    placeholder="Opret en adgangskode"
-                   @bind="RegisterPassword" />
+                   @bind="RegisterPassword" /> <!--binder værdien til RegisterPassword variablen-->
         </div>
 
-        <button class="auth-button" @onclick="CreateProfile">
+        <button class="auth-button" @onclick="CreateProfile"> <!--når knappen trykkes bliver man opretteti systemet, fordi CreateProfile kaldes-->
             Opret profil
         </button>
 
@@ -100,33 +109,36 @@
     //Opret profil - udfyldes i formularen
     private string RegisterName = "";
     private string RegisterEmail = "";
+    private string RegisterPhonenumber = "";
     private string RegisterPassword = "";
     
     
     //validere de login oplysninger vi har fået
     private async Task ValidateLogin()
     {
+        //Opretter en Dictionary med den e-mail og adgangskode, som brugeren har indtastet i loginformularen
         var data = new Dictionary<string, string>
         {
-            { "Email", LoginEmail },
-            { "Password", LoginPassword }
+            { "Email", LoginEmail }, { "Password", LoginPassword }
         };
 
+        //Sender loginoplysningerne til backend med en HTTP POST-request
+        //FormUrlEncodedContent gør oplysningerne klar til at blive sendt som formulardata - vi har gjort klar til modtagelsen i controlleren
         var response = await Http.PostAsync(
-            $"{apiUrl}/Member/login",
-            new FormUrlEncodedContent(data));
+            $"{apiUrl}/Member/login", new FormUrlEncodedContent(data));
 
+        //Kontrollerer om backend har godkendt login
         if (response.IsSuccessStatusCode)
         {
-            // Henter det eksisterende Member_Id fra backend
+            //Henter det eksisterende Member_Id fra backend
             int memberId = await response.Content.ReadFromJsonAsync<int>();
 
-            // Gemmer brugerens ID og loginstatus
+            //Gemmer brugerens ID og loginstatus
             LoginState.SetLogin(memberId);
-
+            // Sender brugeren videre til annoncesiden
             Navigation.NavigateTo("/annoncer");
         }
-        else
+        else // ellers får brugeren en fejlbesked
         {
             LoginMessage = "Forkert e-mail eller adgangskode";
         }
@@ -137,7 +149,7 @@
     //Gemmer det nyeoprettede medlem
     private async Task CreateProfile()
     {
-        //Opretter et Member-objekt ud fra formularen
+        // Opretter et nyt Member-objekt med de oplysninger, brugeren har indtastet i formularen
         Member newMember = new Member
         {
             Name = RegisterName,
@@ -146,8 +158,10 @@
         };
 
         //Sender den nye profil til backend
+        // PostAsJsonAsync omdanner objektet til JSON, som backend kan modtage
         var response = await Http.PostAsJsonAsync($"{apiUrl}/Member", newMember);
 
+        //Kontrollerer om backend har godkendt oprettelsen af profilen
         if (response.IsSuccessStatusCode)
         {
             //Rydder formularen efter oprettelse
