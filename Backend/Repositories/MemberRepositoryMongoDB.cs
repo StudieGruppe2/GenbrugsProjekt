@@ -60,23 +60,17 @@ public class MemberRepositoryMongoDB : IMemberRepository
         return member;
     }
 
-    public bool LoginToProfile(string Email, string Password)
+    public Member? LoginToProfile(string Email, string Password)
     {
-        // Finder en bruger i MongoDB ud fra e-mail
-        FilterDefinition<Member> filter =
-            Builders<Member>.Filter.Eq(m => m.Email, Email);
+        var filter = Builders<Member>.Filter.Eq(m => m.Email, Email);
 
-        // Henter brugeren fra databasen
         Member? member = memberCollection.Find(filter).FirstOrDefault();
 
-        // Kontrollerer om brugeren findes, og om password matcher
-        if (member != null && member.Password == Password)
+        if (member == null || member.Password != Password)
         {
-            return true; // Login lykkedes
+            return null;
         }
-        else
-        {
-            return false; // Login mislykkedes
-        }
+
+        return member;
     }
 }

@@ -5,8 +5,7 @@ namespace Backend.Repositories;
 public class AnnonceRepositoryMemory : IAnnonceRepository
 {
     private List<Annonce> annoncer = new List<Annonce>();
-
-    private int nextAnnonceId = 1;
+    
 
       // Constructor - opretter testdata
     public AnnonceRepositoryMemory()
@@ -74,8 +73,7 @@ public class AnnonceRepositoryMemory : IAnnonceRepository
 
     public Annonce CreateNewAd(Annonce annonce)
     {
-        annonce.Annonce_Id = nextAnnonceId;
-        nextAnnonceId++;
+        annonce.Annonce_Id = annoncer.Count == 0 ? 1 : annoncer.Max(a => a.Annonce_Id) + 1;        
 
         annoncer.Add(annonce);
         return annonce;

@@ -8,5 +8,5 @@ public interface IMemberRepository
     
     Member CreateProfile(Member member);
     
-    bool LoginToProfile(string Email, string Password);
+    Member?  LoginToProfile(string Email, string Password);
 }

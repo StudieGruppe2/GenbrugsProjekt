@@ -1,11 +1,15 @@
 @page "/annoncer"
 @using Core
 @using System.Net.Http.Json
+@inject LoginState LoginState
+@inject NavigationManager Navigation
 @inject HttpClient Http
 
 <PageTitle>Annoncer</PageTitle>
 
-<h1>Annoncer</h1>
+@if (LoginState.IsLoggedIn)
+{
+    <h1>Annoncer</h1>
 
 <!-- SØGNING OG KATEGORI -->
 <div class="soege-linje">
@@ -114,7 +118,21 @@
     </div>
 }
 
+}
+
+
 @code {
+    
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && !LoginState.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    
     // Adressen på backenden (se Backend/Properties/launchSettings.json)
     const string apiUrl = "http://localhost:5125";
 
@@ -145,11 +163,14 @@
     // Kaldes automatisk, når siden åbner
     protected override async Task OnInitializedAsync()
     {
-        await HentAnnoncer();
+        if (LoginState.IsLoggedIn)
+        {
+            await LoadData();
+        }
     }
 
     // Henter alle annoncer fra backend: GET /annonce
-    private async Task HentAnnoncer()
+    private async Task LoadData()
     {
         try
         {
@@ -195,7 +216,7 @@
             valgtAnnonce = null;
 
             // Henter annoncerne igen. Den reserverede annonce forsvinder fra listen.
-            await HentAnnoncer();
+            await LoadData();
         }
         else
         {

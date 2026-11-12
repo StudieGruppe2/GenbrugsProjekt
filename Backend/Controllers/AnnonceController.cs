@@ -57,6 +57,8 @@ public class AnnonceController : ControllerBase
 
         return repository.CreateNewAd(annonce);
     }
+    
+    
 
     [HttpDelete("{Annonce_Id}")]
     public ActionResult DeleteAd(int Annonce_Id)
@@ -69,6 +71,8 @@ public class AnnonceController : ControllerBase
         return Ok("Ad Deleted");
     }
 
+    
+    
     [HttpPut("{Annonce}")]
     public ActionResult UpdateAnnonce(Annonce Annonce)
     {

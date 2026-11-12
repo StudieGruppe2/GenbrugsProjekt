@@ -1,4 +1,8 @@
-﻿<nav class="navbar navbar-expand-lg navbar-dark">
+﻿@implements IDisposable
+@inject LoginState LoginState
+@inject NavigationManager Navigation
+
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
 
         <NavLink class="navbar-brand" href="/">
@@ -15,21 +19,20 @@
 
             <div class="navbar-nav ms-auto align-items-lg-center gap-3">
 
-                <NavLink class="nav-link"
-                         href="/annoncer">
-                    Annoncer
-                </NavLink>
+                @if (LoginState.IsLoggedIn)
+                {
+                    <NavLink class="nav-link" href="/annoncer">
+                        Annoncer
+                    </NavLink>
 
-                <NavLink class="nav-link"
-                         href="/minside">
-                    Min side
-                </NavLink>
+                    <NavLink class="nav-link" href="/minside">
+                        Min side
+                    </NavLink>
 
-                <NavLink class="btn login-button"
-                         href="/login">
-                    <i class="bi bi-box-arrow-right"></i>
-                    Log ud
-                </NavLink>
+                    <button class="btn login-button" @onclick="Logout">
+                        Log ud
+                    </button>
+                }
 
             </div>
         </div>
@@ -46,4 +49,31 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    private void Logout()
+    {
+        LoginState.Logout();
+        Navigation.NavigateTo("/");
+    }
+    
+    
+    protected override void OnInitialized()
+    {
+        // NavMenu lytter efter ændringer i loginstatus
+        LoginState.OnChange += UpdateMenu;
+    }
+
+    private void UpdateMenu()
+    {
+        // Opdaterer navbaren, når loginstatus ændres
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        // Stopper med at lytte, når NavMenu fjernes
+        LoginState.OnChange -= UpdateMenu;
+    }
+
+
 }

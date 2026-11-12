@@ -52,16 +52,22 @@ public class MemberRepositoryMemory : IMemberRepository
         return member;
     }
 
-    public bool LoginToProfile(string Email, string Password)
+    
+    public Member? LoginToProfile(string Email, string Password)
     {
-        foreach (Member member in members)
+        // Finder medlemmet med den rigtige e-mail og adgangskode
+        Member? member = members.FirstOrDefault(
+            m => m.Email == Email && m.Password == Password);
+
+        // Hvis medlemmet ikke findes, returneres null
+        if (member == null)
         {
-            if (Email == member.Email && Password == member.Password)
-            {
-                return true;
-            }
+            return null;
         }
-        return false;
+
+        // Returnerer det eksisterende medlem med det rigtige Member_Id
+        return member;
     }
+
 
 }

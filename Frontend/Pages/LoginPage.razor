@@ -2,6 +2,7 @@
 @page "/Login"
 @using System.Net.Http.Json
 @using Core
+@inject LoginState LoginState
 @inject NavigationManager Navigation
 @inject HttpClient Http
 
@@ -87,7 +88,7 @@
 @code {
 
     //Adressen på backenden
-    const string apiUrl = "http://localhost:?????";
+    const string apiUrl = "http://localhost:5125";
 
     //Login - udfyldes i formualen
     private string LoginEmail = "";
@@ -107,18 +108,22 @@
     {
         var data = new Dictionary<string, string>
         {
-            // Opretter en samling med Email og Password ud fra det, brugeren har skrevet i loginformularen.
             { "Email", LoginEmail },
             { "Password", LoginPassword }
         };
 
-        //Sender loginoplysningerne til backend med HTTP POST.
-        //FormUrlEncodedContent gør data til formulardata, som controlleren kan modtage med [FromForm].
-        //await venter på svaret uden at blokere tråden.
-        var response = await Http.PostAsync($"{apiUrl}/Member/login", new FormUrlEncodedContent(data));
+        var response = await Http.PostAsync(
+            $"{apiUrl}/Member/login",
+            new FormUrlEncodedContent(data));
 
         if (response.IsSuccessStatusCode)
         {
+            // Henter det eksisterende Member_Id fra backend
+            int memberId = await response.Content.ReadFromJsonAsync<int>();
+
+            // Gemmer brugerens ID og loginstatus
+            LoginState.SetLogin(memberId);
+
             Navigation.NavigateTo("/annoncer");
         }
         else
@@ -126,6 +131,7 @@
             LoginMessage = "Forkert e-mail eller adgangskode";
         }
     }
+
    
     
     //Gemmer det nyeoprettede medlem

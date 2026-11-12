@@ -41,25 +41,23 @@ public class MemberController : ControllerBase
         return member;
     }
 
-    //Login til profil
+    
     [HttpPost("login")]
-    //IActionResult bruges, fordi login kan returner forskellige HTTP-svar:
-    //Fx 200 OK ved succesfuldt login
-    //401 Unauthorized ved forkert login
     public IActionResult LoginToProfile(
-        [FromForm] string Email, // FromForm betyder, at Email og Password modtages fra de formulardata, som frontend sender.
+        [FromForm] string Email,
         [FromForm] string Password)
     {
-        // Kalder repository, som kontrollerer om loginoplysningerne er korrekte, og returnerer true eller false.
-        bool loginSuccess = repository.LoginToProfile(Email, Password);
+        Member? member = repository.LoginToProfile(Email, Password);
 
-        if (loginSuccess)
+        if (member == null)
         {
-            return Ok();
+            return Unauthorized();
         }
 
-        return Unauthorized();
+        // Sender det rigtige Member_Id tilbage
+        return Ok(member.Member_id);
     }
+
     
 
 }

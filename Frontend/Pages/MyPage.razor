@@ -3,11 +3,16 @@
 @using System.Net.Http.Json
 @using Core
 @inject NavigationManager Navigation
+@inject LoginState LoginState
 @inject HttpClient Http
 
-<div class="mypage">
+@if (LoginState.IsLoggedIn)
+{
+    <div class="mypage">
 
-    <h1>Min side</h1>
+        <h1>Min side</h1>
+        <p>Mit medlems-ID: @LoginState.MemberId</p>
+       
     <p>Her kan du administrere dine annoncer og se købsanmodninger.</p>
 
     <div class="dashboard">
@@ -155,10 +160,10 @@
                 <!-- Status -->
                 <label>Status</label>
                 <select @bind="newAnnonce.Status">
-                    <option value="Aktiv">Aktiv</option>
-                    <option value="Inaktiv">Inaktiv</option>
-                    <option value="Reserveret">Reserveret</option>
-                    <option value="Solgt">Solgt</option>
+                    <option value="Active">Aktiv</option>
+                    <option value="Inactive">Inaktiv</option>
+                    <option value="Reserved">Reserveret</option>
+                    <option value="Sold">Solgt</option>
                 </select>
 
                 <div class="modal-actions">
@@ -178,8 +183,20 @@
     </div>
 }
 
+}
+
 @code {
-    const string apiUrl = "http://localhost:????";
+   
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && !LoginState.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    
+    const string apiUrl = "http://localhost:5125";
     
     private bool showModal = false;
     
@@ -196,29 +213,64 @@
     //Kaldes når siden åbner
     protected override async Task OnInitializedAsync()
     {
-        await LoadData();
+        if (LoginState.IsLoggedIn)
+        {
+            await LoadData();
+        }
     }
 
-    // Henter køb og annoncer fra backend
+    private string fejlBesked = "";
+
+    
     private async Task LoadData()
     {
-        purchases = await Http.GetFromJsonAsync<List<Purchase>>($"{apiUrl}/Purchase") ?? new(); //???
-        annoncer = await Http.GetFromJsonAsync<List<Annonce>>($"{apiUrl}/Annonce") ?? new();//???
+        // Henter den indloggede brugers annoncer
+        try
+        {
+            annoncer = await Http.GetFromJsonAsync<List<Annonce>>($"{apiUrl}/Annonce/owner/{LoginState.MemberId}") ?? new();
+
+            Console.WriteLine("Antal annoncer: " + annoncer.Count);
+        }
+        catch (Exception ex)
+        {
+            fejlBesked = "Fejl ved hentning af annoncer: " + ex.Message;
+        }
+
+        // Henter købsanmodninger
+        try
+        {
+            purchases = await Http.GetFromJsonAsync<List<Purchase>>($"{apiUrl}/Purchase") ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Fejl ved købsanmodninger: " + ex.Message);
+        }
     }
 
     
     //Opretter en annonce i backend
+    
     private async Task CreateNewAd()
     {
-        var response = await Http.PostAsJsonAsync($"{apiUrl}/Annonce", newAnnonce);
+        // Brugerens Member_Id bliver annoncens Owner_Id
+        newAnnonce.Owner_Id = LoginState.MemberId;
+
+        // Sender annoncen til backend
+        var response = await Http.PostAsJsonAsync(
+            $"{apiUrl}/Annonce", newAnnonce);
 
         if (response.IsSuccessStatusCode)
         {
             newAnnonce = new();
-            showModal = false; // lukker modalvinduet
+            showModal = false;
             await LoadData();
         }
+        else
+        {
+            fejlBesked = await response.Content.ReadAsStringAsync();
+        }
     }
+
     
     
     
