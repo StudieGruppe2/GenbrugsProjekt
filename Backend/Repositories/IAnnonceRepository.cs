@@ -16,7 +16,5 @@ public interface IAnnonceRepository
 
     bool UpdateAnnonce(Annonce annonce);
 
-    bool UpdateAnnonceStatus(Annonce annonce);
-   
-
+    bool UpdateAnnonceStatus(int Annonce_Id, string Status);
 }

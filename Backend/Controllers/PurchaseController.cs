@@ -64,8 +64,5 @@ public class PurchaseController : ControllerBase
 
         return Ok();
         
-        //return repository.UpdatePurchaseStatus(purchaseId, status);
-        
-        // accceptet, rejected, pending
     }
 }

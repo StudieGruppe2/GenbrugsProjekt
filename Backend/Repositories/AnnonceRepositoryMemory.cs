@@ -122,8 +122,17 @@ public class AnnonceRepositoryMemory : IAnnonceRepository
         return true;
     }
 
-    public bool UpdateAnnonceStatus(Annonce annonce)
+    // Ændrer status på en annonce, fx fra "Active" til "Reserved"
+    public bool UpdateAnnonceStatus(int Annonce_Id, string Status)
     {
-   
+        Annonce? annonce = annoncer.FirstOrDefault(a => a.Annonce_Id == Annonce_Id);
+        if (annonce == null)
+        {
+            return false;
+        }
+
+        annonce.Status = Status;
+        return true;
     }
+
 }

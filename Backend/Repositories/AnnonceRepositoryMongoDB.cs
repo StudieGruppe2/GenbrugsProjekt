@@ -129,8 +129,15 @@ public class AnnonceRepositoryMongoDB : IAnnonceRepository
     
     
     //Opdatere statussen på annoncen
-    public bool UpdateAnnonceStatus(Annonce annonce)
+    // Ændrer kun Status-feltet på annoncen i databasen
+    public bool UpdateAnnonceStatus(int Annonce_Id, string Status)
     {
-   
+        FilterDefinition<Annonce> filter = Builders<Annonce>.Filter.Eq("_id", Annonce_Id);
+        
+        UpdateDefinition<Annonce> update = Builders<Annonce>.Update.Set("Status", Status);
+        
+        UpdateResult result = annonceCollection.UpdateOne(filter, update);
+        
+        return result.MatchedCount > 0;
     }
 }

@@ -80,18 +80,28 @@ public class AnnonceController : ControllerBase
         return Ok("Ad Updated");
     }
 
-    [HttpPut("{Annonce_Id}")]
-    public ActionResult UpdateAnnonceStatus(Annonce Annonce)
+    
+    
+    // De eneste tilladte statusser
+    private List<string> allowedStatus = new List<string> { "Active", "Reserved", "Sold", "Inactive" };
+
+    // Rute: /annonce/{annonceId}/status?status=Sold
+    // Put fordi vi opdaterer en annonce, der allerede findes
+    [HttpPut("{annonceId}/status")]
+    public IActionResult UpdateStatus(int Annonce_Id, string Status)
     {
-        
+        // Stopper, hvis status ikke er en af de fire tilladte
+        if (!allowedStatus.Contains(Status))
+        {
+            return BadRequest("Status skal være Active, Reserved, Sold eller Inactive.");
+        }
+
+        bool success = repository.UpdateAnnonceStatus(Annonce_Id, Status);
+        if (!success)
+        {
+            return NotFound("Annoncen findes ikke.");
+        }
+
+        return Ok();
     }
-
-
-// status på annonce: Active, Reserved, Sold, Inactive
-
-
-
-
-
-   
 }
