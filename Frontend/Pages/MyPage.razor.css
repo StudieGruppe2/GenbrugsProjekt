@@ -189,7 +189,17 @@
     color: #A12D2D;
 }
 
-/* Gør redigeringsikonet mørkegrønt */
-.icon-btn .bi-pencil {
-    color: #253F32;
+
+/* Placerer blyanten til højre for annoncens oplysninger */
+.annonce {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
+/* Gør redigeringsikonet mørkegrønt */
+.rediger-ikon {
+    color: #253F32;
+    font-size: 24px;
+}
+

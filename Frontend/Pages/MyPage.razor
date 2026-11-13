@@ -29,17 +29,19 @@
                 @foreach (Annonce annonce in annoncer)
                 {
                     <div class="annonce">
+                        <!-- Viser annoncens titel og pris -->
                         <div>
                             <h4>@annonce.Title</h4>
                             <p>@annonce.Price kr.</p>
                         </div>
 
-                        <!-- Åbner redigeringsvinduet for den valgte annonce -->
+                        <!-- Knap til at redigere annoncen -->
                         <button class="icon-btn" @onclick="() => StartRedigering(annonce)">
-                            <i class="bi bi-pencil"></i>
+                            <span class="rediger-ikon">✎</span>
                         </button>
                     </div>
                 }
+
 
 
                 @if (annoncer.Count == 0)
