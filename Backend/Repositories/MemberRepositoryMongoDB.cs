@@ -12,9 +12,9 @@ public class MemberRepositoryMongoDB : IMemberRepository
     private readonly IMongoCollection<Member> memberCollection;
 
     // Constructoren køres, når repositoryet bliver oprettet
-    public MemberRepositoryMongoDB()
+       public MemberRepositoryMongoDB(IConfiguration configuration)
     {
-        // Fortæller MongoDB, at Member_id skal bruges som dokumentets _id
+        // Fortæller MongoDB, at Member_id er nøglen (_id)
         if (!BsonClassMap.IsClassMapRegistered(typeof(Member)))
         {
             BsonClassMap<Member> map = new BsonClassMap<Member>();
@@ -23,17 +23,13 @@ public class MemberRepositoryMongoDB : IMemberRepository
             BsonClassMap.RegisterClassMap(map);
         }
 
-        // Opretter forbindelse til MongoDB
-        string connectionString = ""; // Indsæt jeres connection string her
-        var client = new MongoClient(connectionString);
+        // Henter connection stringen fra User Secrets (ligger på hver persons egen computer)
+        string connectionString = configuration["MongoDB:ConnectionString"]!;
+        MongoClient client = new MongoClient(connectionString);
+        IMongoDatabase database = client.GetDatabase("GenbrugsplatformDB");
 
-        // Vælger databasen
-        var database = client.GetDatabase("GenbrugsplatformDB");
-
-        // Vælger collectionen, hvor medlemmerne gemmes
         memberCollection = database.GetCollection<Member>("Members");
     }
-
 
     // ---------- HENT MEDLEM ----------
     // Finder et bestemt medlem ud fra dets ID

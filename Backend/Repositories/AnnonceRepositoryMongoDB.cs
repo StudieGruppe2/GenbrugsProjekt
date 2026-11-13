@@ -13,9 +13,9 @@ public class AnnonceRepositoryMongoDB : IAnnonceRepository
 
     // ---------- FORBINDELSE TIL MONGODB ----------
     // Constructoren køres, når repositoryet bliver oprettet
-    public AnnonceRepositoryMongoDB()
+       public AnnonceRepositoryMongoDB(IConfiguration configuration)
     {
-        // Fortæller MongoDB, at Annonce_Id skal bruges som dokumentets _id
+        // Fortæller MongoDB, at Annonce_Id er nøglen (_id)
         if (!BsonClassMap.IsClassMapRegistered(typeof(Annonce)))
         {
             BsonClassMap<Annonce> map = new BsonClassMap<Annonce>();
@@ -24,14 +24,11 @@ public class AnnonceRepositoryMongoDB : IAnnonceRepository
             BsonClassMap.RegisterClassMap(map);
         }
 
-        // Opretter forbindelse til MongoDB
-        string connectionString = ""; // Indsæt jeres connection string her
+        // Henter connection stringen fra User Secrets (ligger på hver persons egen computer)
+        string connectionString = configuration["MongoDB:ConnectionString"]!;
         MongoClient client = new MongoClient(connectionString);
-
-        // Vælger databasen
         IMongoDatabase database = client.GetDatabase("GenbrugsplatformDB");
 
-        // Vælger collectionen, hvor annoncerne bliver gemt
         annonceCollection = database.GetCollection<Annonce>("Annoncer");
     }
 

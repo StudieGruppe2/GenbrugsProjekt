@@ -13,9 +13,9 @@ public class PurchaseRepositoryMongoDB : IPurchaseRepository
     private readonly IMongoCollection<Purchase> purchaseCollection;
 
     // Constructoren køres, når repositoryet bliver oprettet
-    public PurchaseRepositoryMongoDB()
+        public PurchaseRepositoryMongoDB(IConfiguration configuration)
     {
-        // Fortæller MongoDB, at Purchase_Id skal bruges som dokumentets _id
+        // Fortæller MongoDB, at Purchase_Id er nøglen (_id)
         if (!BsonClassMap.IsClassMapRegistered(typeof(Purchase)))
         {
             BsonClassMap<Purchase> map = new BsonClassMap<Purchase>();
@@ -24,14 +24,11 @@ public class PurchaseRepositoryMongoDB : IPurchaseRepository
             BsonClassMap.RegisterClassMap(map);
         }
 
-        // Opretter forbindelse til MongoDB
-        string connectionString = ""; // Indsæt jeres connection string her
+        // Henter connection stringen fra User Secrets (ligger på hver persons egen computer)
+        string connectionString = configuration["MongoDB:ConnectionString"]!;
         MongoClient client = new MongoClient(connectionString);
-
-        // Vælger databasen
         IMongoDatabase database = client.GetDatabase("GenbrugsplatformDB");
 
-        // Vælger collectionen, hvor købsanmodningerne gemmes
         purchaseCollection = database.GetCollection<Purchase>("purchase");
     }
 
