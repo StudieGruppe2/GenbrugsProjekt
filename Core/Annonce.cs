@@ -18,8 +18,9 @@ public class Annonce
     // Id'et på det medlem, der ejer annoncen
     public int Owner_Id { get; set; }
 
-    public DateTime Published_Date { get; set; }
-
+    // Datoen for hvornår annoncen er oprettet
+    public DateTime Published_Date { get; set; } = DateTime.Today;
+    
     // Lokale på Eaaa, hvor varen ligger - eller "Ikke på Eaaa"
     public string Location { get; set; } = "";
 

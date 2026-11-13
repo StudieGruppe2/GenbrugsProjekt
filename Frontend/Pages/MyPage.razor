@@ -24,6 +24,8 @@
                     </button>
                 </div>
 
+                
+                <!-- Viser alle annoncer, som den indloggede bruger ejer -->
                 @foreach (Annonce annonce in annoncer)
                 {
                     <div class="annonce">
@@ -31,8 +33,14 @@
                             <h4>@annonce.Title</h4>
                             <p>@annonce.Price kr.</p>
                         </div>
+
+                        <!-- Åbner redigeringsvinduet for den valgte annonce -->
+                        <button class="icon-btn" @onclick="() => StartRedigering(annonce)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
                     </div>
                 }
+
 
                 @if (annoncer.Count == 0)
                 {
@@ -231,6 +239,72 @@
             </div>
         </div>
     }
+    
+    
+<!-- MODALVINDUE TIL REDIGERING AF ANNONCE -->
+@if (redigerAnnonce != null)
+{
+    <div class="modal-overlay">
+        <div class="modal-box">
+
+            <div class="box-header">
+                <h2>Rediger annonce</h2>
+                <button class="icon-btn" @onclick="LukRedigering">✕</button>
+            </div>
+
+            <div class="modal-form">
+
+                <!-- Titel -->
+                <label>Navn på vare</label>
+                <input type="text" @bind="redigerAnnonce.Title" />
+
+                <!-- Kategori -->
+                <label>Kategori</label>
+                <select @bind="redigerAnnonce.Category">
+                    <option value="Bolig">Bolig</option>
+                    <option value="Tøj">Tøj</option>
+                    <option value="Smykker">Smykker</option>
+                    <option value="Cykler">Cykler</option>
+                    <option value="Elektronik">Elektronik</option>
+                </select>
+
+                <!-- Billede -->
+                <label>Billede (URL)</label>
+                <input type="text" @bind="redigerAnnonce.Picture" />
+
+                <!-- Beskrivelse -->
+                <label>Beskrivelse</label>
+                <textarea rows="3" @bind="redigerAnnonce.Description"></textarea>
+
+                <!-- Pris -->
+                <label>Pris (kr.)</label>
+                <input type="number" min="0" @bind="redigerAnnonce.Price" />
+
+                <!-- Lokation -->
+                <label>Lokation</label>
+                <input type="text" @bind="redigerAnnonce.Location" />
+
+                <!-- Viser en fejl, hvis ændringerne ikke bliver gemt -->
+                @if (redigerFejl != "")
+                {
+                    <p class="text-danger">@redigerFejl</p>
+                }
+
+                <div class="modal-actions">
+                    <button class="red-btn" @onclick="LukRedigering">
+                        Annuller
+                    </button>
+
+                    <button class="green-btn" @onclick="GemRedigering">
+                        Gem ændringer
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
 }
 
 
@@ -251,6 +325,15 @@
 
     // Det der udfyldes i formularen for annonceoprettelse
     private Annonce newAnnonce = new();
+    
+    
+    // Den annonce, som brugeren er ved at redigere
+    // Null betyder, at redigeringsvinduet er lukket
+    private Annonce? redigerAnnonce = null;
+
+    // Viser en fejlbesked, hvis annoncen ikke kan gemmes
+    private string redigerFejl = "";
+
 
 
     // ---------- NÅR SIDEN ÅBNES ----------
@@ -307,6 +390,68 @@
             await LoadData();
         }
     }
+
+    
+// ---------- REDIGER ANNONCE ----------
+
+// Åbner redigeringsvinduet med annoncens nuværende oplysninger
+    private void StartRedigering(Annonce annonce)
+    {
+        redigerFejl = "";
+
+        // Laver en kopi af annoncen, så ændringer først gemmes,
+        // når brugeren trykker på Gem ændringer
+        redigerAnnonce = new Annonce
+        {
+            Annonce_Id = annonce.Annonce_Id,
+            Title = annonce.Title,
+            Category = annonce.Category,
+            Picture = annonce.Picture,
+            Description = annonce.Description,
+            Price = annonce.Price,
+            Owner_Id = annonce.Owner_Id,
+            Published_Date = annonce.Published_Date,
+            Location = annonce.Location,
+            Status = annonce.Status
+        };
+    }
+
+// Lukker redigeringsvinduet uden at gemme ændringer
+    private void LukRedigering()
+    {
+        redigerAnnonce = null;
+        redigerFejl = "";
+    }
+
+// Sender den opdaterede annonce til backend
+    private async Task GemRedigering()
+    {
+        // Stopper, hvis der ikke er valgt en annonce
+        if (redigerAnnonce == null)
+        {
+            return;
+        }
+
+        // Sender den opdaterede annonce til backend med HTTP PUT
+        var response = await Http.PutAsJsonAsync(
+            $"{apiUrl}/Annonce/{redigerAnnonce.Annonce_Id}", redigerAnnonce);
+
+        // Hvis backend har godkendt ændringerne
+        if (response.IsSuccessStatusCode)
+        {
+            // Lukker modalvinduet
+            redigerAnnonce = null;
+
+            // Henter annoncerne igen, så ændringerne vises på siden
+            await LoadData();
+        }
+        else
+        {
+            // Viser en fejlbesked, hvis annoncen ikke kunne opdateres
+            redigerFejl = "Kunne ikke gemme ændringerne.";
+        }
+    }
+
 
 
     // ---------- KØBSANMODNINGER ----------
