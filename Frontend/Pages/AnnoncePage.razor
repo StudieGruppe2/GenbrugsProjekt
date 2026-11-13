@@ -78,24 +78,6 @@
                         <p class="titel">@annonce.Title</p>
                         <p class="pris">@annonce.Price kr.</p>
                     </div>
-
-                    @*
-                    <!-- FAVORITKNAP - Funktionen er ikke taget i brug endnu -->
-                    <!-- stopPropagation forhindrer, at klik på hjertet åbner modalvinduet -->
-                    <button class="hjerte"
-                            @onclick="() => SkiftFavorit(annonce.Annonce_Id)"
-                            @onclick:stopPropagation="true">
-                        @if (favoritter.Contains(annonce.Annonce_Id))
-                        {
-                            <span>♥</span>
-                        }
-                        else
-                        {
-                            <span>♡</span>
-                        }
-                    </button>
-                    *@
-
                 </div>
             </div>
         }
@@ -179,9 +161,6 @@
     private string koebBesked = ""; // Besked der vises, når en købsanmodning er sendt
     
     private string modalFejl = ""; // Fejlbesked der vises, hvis en købsanmodning bliver afvist
-
-    // Gemmer ID'erne på de annoncer, brugeren har markeret som favoritter
-    // private List<int> favoritter = new();
 
 
     // ---------- NÅR SIDEN ÅBNES ----------
@@ -304,25 +283,4 @@
         // Sorterer annoncerne efter dato, så de nyeste kommer først
         return resultat.OrderByDescending(a => a.Published_Date).ToList();
     }
-
-
-    // ---------- FAVORITTER ----------
-    /*
-    // Funktionen er ikke taget i brug endnu
-
-    // Tilføjer eller fjerner en annonce fra favoritter
-    private void SkiftFavorit(int annonceId)
-    {
-        // Hvis annoncen allerede er en favorit, fjernes den
-        if (favoritter.Contains(annonceId))
-        {
-            favoritter.Remove(annonceId);
-        }
-        else
-        {
-            // Ellers tilføjes annoncen til favoritter
-            favoritter.Add(annonceId);
-        }
-    }
-    */
 }
