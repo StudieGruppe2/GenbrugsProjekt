@@ -203,3 +203,27 @@
     font-size: 24px;
 }
 
+.annonce-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.edit-btn {
+    color: #264d36; /* jeres mørkegrønne */
+}
+
+
+/* Gør sletteikonet rødt */
+.delete-btn {
+    color: #c0392b;
+    font-size: 22px;
+}
+

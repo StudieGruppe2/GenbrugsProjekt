@@ -39,6 +39,9 @@
                         <button class="icon-btn" @onclick="() => StartRedigering(annonce)">
                             <span class="rediger-ikon">✎</span>
                         </button>
+                        <!-- Slet annonce -->
+                        <button class="icon-btn delete-btn" @onclick="() => SletAnnonce(annonce.Annonce_Id)">🗑
+                        </button>
                     </div>
                 }
 
@@ -395,7 +398,6 @@
 
     
 // ---------- REDIGER ANNONCE ----------
-
 // Åbner redigeringsvinduet med annoncens nuværende oplysninger
     private void StartRedigering(Annonce annonce)
     {
@@ -451,6 +453,18 @@
         {
             // Viser en fejlbesked, hvis annoncen ikke kunne opdateres
             redigerFejl = "Kunne ikke gemme ændringerne.";
+        }
+    }
+    
+    //Sletter en annonce, hvis det er din egen
+    private async Task SletAnnonce(int Annonce_Id)
+    {
+        HttpResponseMessage response = await Http.DeleteAsync($"{apiUrl}/Annonce/{Annonce_Id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Henter data igen, så annoncen forsvinder fra listen
+            await LoadData();
         }
     }
 
