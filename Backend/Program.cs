@@ -5,27 +5,32 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+// Gør det muligt at bruge Swagger til at teste API'et
+builder.Services.AddSwaggerGen();
+
 // Dependency Injection: .NET får besked på, hvilket repository
-// den skal give til controllerne, når de beder om et interface.
+// den skal give til controllerne, når de beder om et interface
+
+// Memory-repositories (bruges ikke lige nu)
 //builder.Services.AddSingleton<IPurchaseRepository, PurchaseRepositoryMemory>();
 //builder.Services.AddSingleton<IAnnonceRepository, AnnonceRepositoryMemory>();
 //builder.Services.AddSingleton<IMemberRepository, MemberRepositoryMemory>();
 
-// Skift fra Memory til MongoDB, når databasen skal bruges
+// MongoDB-repositories (bruges lige nu)
 builder.Services.AddSingleton<IPurchaseRepository, PurchaseRepositoryMongoDB>();
 builder.Services.AddSingleton<IAnnonceRepository, AnnonceRepositoryMongoDB>();
 builder.Services.AddSingleton<IMemberRepository, MemberRepositoryMongoDB>();
-
-builder.Services.AddOpenApi();
 
 // Giver frontend lov til at kalde backend
 builder.Services.AddCors(OpsaetCors);
 
 var app = builder.Build();
 
+// Swagger aktiveres, når backend kører i Development
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 // Skal stå før MapControllers
@@ -37,6 +42,10 @@ app.MapControllers();
 
 app.Run();
 
+
+// ---------- CORS ----------
+
+// Tillader frontend at sende HTTP-requests til backend
 static void OpsaetCors(CorsOptions options)
 {
     CorsPolicy policy = new CorsPolicyBuilder()
