@@ -189,3 +189,7 @@
     color: #A12D2D;
 }
 
+/* Gør redigeringsikonet mørkegrønt */
+.icon-btn .bi-pencil {
+    color: #253F32;
+}
